@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pour toi 💖</title>
+<style>
+  :root{
+    --bg:#0f1724;
+    --card:#0b1220;
+    --accent:#ff4d6d;
+    --muted:#cbd5e1;
+    --glass: rgba(255,255,255,0.04);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 10% 10%, rgba(255,77,109,0.08), transparent 10%),
+      radial-gradient(1000px 500px at 90% 90%, rgba(0,168,255,0.03), transparent 10%),
+      var(--bg);
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .card{
+    width:100%;
+    max-width:760px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:18px;
+    padding:36px;
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+    border:1px solid rgba(255,255,255,0.04);
+  }
+
+  h1{
+    margin:0 0 8px 0;
+    font-size:28px;
+    color:#fff;
+    letter-spacing:0.2px;
+  }
+  p.lead{
+    margin:0 0 24px 0;
+    color: #bcd0e8;
+  }
+
+  /* Heart */
+  .heart-wrap{display:flex;justify-content:center;margin:14px 0 22px}
+  .heart{
+    width:160px;
+    height:160px;
+    position:relative;
+    transform:scale(1);
+    transition:transform .2s ease;
+    cursor:pointer;
+  }
+  .heart:before, .heart:after{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:160px;
+    background:linear-gradient(180deg,var(--accent) 0%, #ff7b8d 60%);
+    border-radius:100px 100px 0 0;
+    top:0;
+    left:30px;
+    transform-origin:50% 100%;
+    box-shadow:0 10px 30px rgba(255,77,109,0.25), inset 0 -6px 10px rgba(0,0,0,0.12);
+  }
+  .heart:after{left:0; transform:rotate(-45deg)}
+  .heart:before{left:40px; transform:rotate(45deg)}
+
+  /* pulse when active */
+  .heart.pulse{
+    animation:beat 0.9s infinite;
+  }
+  @keyframes beat{
+    0% {transform:scale(1)}
+    30% {transform:scale(1.12)}
+    60% {transform:scale(0.98)}
+    100% {transform:scale(1)}
+  }
+
+  /* reveal box */
+  .reveal{
+    margin-top:20px;
+    min-height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    border-radius:12px;
+    background:var(--glass);
+    color:#e8f1ff;
+    font-size:18px;
+    line-height:1.45;
+  }
+
+  /* button */
+  .btn{
+    margin-top:18px;
+    display:inline-block;
+    background:transparent;
+    border:2px solid var(--accent);
+    color:var(--accent);
+    padding:10px 18px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .btn:hover{ background: rgba(255,77,109,0.06); transform:translateY(-2px) }
+
+  /* typewriter text */
+  .typed {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size:20px;
+    white-space:pre-wrap;
+    max-width:660px;
+  }
+
+  /* confetti */
+  .confetti-piece{
+    position:fixed;
+    width:10px;height:14px;
+    opacity:0.95;
+    z-index:9999;
+    pointer-events:none;
+    transform-origin:center;
+  }
+
+  footer{position:absolute;right:16px;bottom:12px;font-size:12px;color:rgba(255,255,255,0.22)}
+  @media(max-width:520px){
+    .heart{width:120px;height:120px}
+    h1{font-size:22px}
+    .card{padding:22px}
+  }
+</style>
+</head>
+<body>
+  <div class="card" role="main" aria-live="polite">
+    <h1>Pour <span id="nameTarget">toi</span> 💖</h1>
+    <p class="lead">J’ai préparé quelque chose de spécial. Clique sur le coeur ou le bouton pour voir.</p>
+
+    <div class="heart-wrap">
+      <div id="heart" class="heart" title="Clique ici pour moi"></div>
+    </div>
+
+    <div class="reveal" id="reveal">
+      <div class="typed" id="typed">...</div>
+    </div>
+
+    <button id="revealBtn" class="btn">Déclarer ma flamme</button>
+
+    <footer>Un petit message personnalisé — modifie le texte dans le code avant d’offrir 😉</footer>
+  </div>
+
+<script>
+  // === PERSONNALISE ICI ===
+  const PERSON_NAME = "Mon amour"; //  <-- écrit ici le prénom ou surnom de ta copine
+  const LINES = [
+    "Salut " + PERSON_NAME + " ❤️",
+    "Je voulais te dire quelque chose depuis un moment.",
+    "Tu rends mes journées plus belles. Ton sourire, ta façon d'écouter, tout chez toi me touche profondément.",
+    "Je t'aime. Et si tu veux, je veux construire des souvenirs avec toi, un pas à la fois.",
+    "Veux-tu être ma copine ? 💫"
+  ];
+  // =========================
+
+  // elements
+  const heart = document.getElementById('heart');
+  const typed = document.getElementById('typed');
+  const btn = document.getElementById('revealBtn');
+  const nameTarget = document.getElementById('nameTarget');
+  nameTarget.textContent = PERSON_NAME;
+
+  let revealed = false;
+
+  function startReveal(){
+    if(revealed) return;
+    revealed = true;
+    heart.classList.add('pulse');
+    btn.disabled = true;
+    btn.style.opacity = 0.7;
+    typeLines(LINES, typed, () => {
+      launchConfetti(80);
+    });
+  }
+
+  heart.addEventListener('click', startReveal);
+  btn.addEventListener('click', startReveal);
+
+  // Typewriter effect for multiple lines
+  function typeLines(lines, container, cb){
+    container.textContent = "";
+    let i = 0;
+    function nextLine(){
+      if(i >= lines.length){ cb && cb(); return; }
+      typeText(lines[i] + (i === lines.length - 1 ? "" : "\n\n"), container, () => {
+        i++; setTimeout(nextLine, 600);
+      });
+    }
+    nextLine();
+  }
+
+  function typeText(text, container, cb){
+    let idx = 0;
+    function step(){
+      if(idx > text.length - 1){ cb && cb(); return; }
+      container.textContent += text[idx++];
+      // small variable speed
+      setTimeout(step, 22 + Math.random()*40);
+    }
+    step();
+  }
+
+  // Simple confetti (no libs)
+  function launchConfetti(count){
+    const colors = ["#ff4d6d","#ffd166","#06d6a0","#4d96ff","#8b5cf6"];
+    for(let i=0;i<count;i++){
+      createPiece(colors[Math.floor(Math.random()*colors.length)]);
+    }
+    // auto clean
+    setTimeout(()=> {
+      document.querySelectorAll('.confetti-piece').forEach(p => p.remove());
+    }, 6000);
+  }
+
+  function createPiece(color){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.background = color;
+    // shape rectangle rotated
+    el.style.width = (8 + Math.random()*10) + 'px';
+    el.style.height = (10 + Math.random()*14) + 'px';
+    el.style.left = (window.innerWidth * 0.2 + Math.random()* (window.innerWidth*0.6)) + 'px';
+    el.style.top = '-20px';
+    el.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+    document.body.appendChild(el);
+
+    // fall animation using requestAnimationFrame
+    const fallDuration = 3500 + Math.random()*2200;
+    const start = performance.now();
+    const horiz = (Math.random()-0.5) * 300;
+    const spin = (Math.random() * 8 - 4);
+    function anim(t){
+      const elapsed = t - start;
+      const progress = Math.min(1, elapsed / fallDuration);
+      // ease
+      const y = progress * (window.innerHeight + 100);
+      const x = parseFloat(el.style.left) + horiz * progress;
+      el.style.top = (y - 20) + 'px';
+      el.style.left = x + 'px';
+      el.style.opacity = 1 - progress*0.2;
+      el.style.transform = 'rotate(' + (spin * progress * 360) + 'deg)';
+      if(progress < 1) requestAnimationFrame(anim);
+      else {
+        // tiny bounce
+        el.style.transition = 'transform .4s ease, opacity .4s ease';
+        el.style.transform = 'translateY(-6px) rotate(0deg)';
+        setTimeout(()=> {
+          el.style.opacity = 0;
+        }, 200);
+      }
+    }
+    requestAnimationFrame(anim);
+  }
+
+  // small extra: click heart to pulse once
+  heart.addEventListener('mouseenter', ()=> heart.style.transform = 'scale(1.06)');
+  heart.addEventListener('mouseleave', ()=> heart.style.transform = 'scale(1)');
+
+  // Accessibility: allow Enter on button
+  btn.addEventListener('keyup', (e)=> { if(e.key === 'Enter') startReveal()});
+
+  // optional: reveal on load after a pause
+  // setTimeout(startReveal, 1500);
+</script>
+</body>
+</html>
